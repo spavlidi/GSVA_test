@@ -217,7 +217,7 @@ observe({
   if(input$save == 0 || is.null(input$save)) return()
   
   isolate({
-  print(input$save)
+
   write.csv(gsvaInput(),file="C:/Users/user/Documents/ES.csv")
   print("ES.csv saved in Documents")
 
