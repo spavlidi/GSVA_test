@@ -24,9 +24,9 @@ shinyUI(pageWithSidebar(
 
     actionButton("gsv", "Apply GSVA"),
 
-    h6("___________________",align = "center",style = "color:gray"),
+    h6("_____________________",align = "center",style = "color:gray"),
     
-    uiOutput("saveui"),
+    uiOutput("testui"),
     
  
     uiOutput("choose_columns_plot"),

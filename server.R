@@ -3,8 +3,11 @@ library("hgu133plus2.db")
 library("hgu133a.db")
 library(shiny)
 library(GEOquery)
+#library(affy)
 library(GSVA)
 library(ggplot2)
+#library(GEOmetadb)
+#library(CellMix)
 
 shinyServer(function(input, output) {
 
@@ -19,13 +22,30 @@ shinyServer(function(input, output) {
 #       dataset<-getGEO(input$symb)[[1]]
 #       dataset<-add_annotation(dataset)
 #       print("dowloading: ")
-#       print(input$symb)   
+#       print(input$symb)
+#   
 #       return(dataset)
-
+      
+      
+      #annotation(dataset) <- "hgu133plus2.db"
+      #save(dataset,file="data/gse.r")
       
 #       ##load local GSE15258 (R Object - ExpressionSet)     
       print("loading localy stored dataset gse15258")
       dataset<-get(load("data/gse15258_2.r"))
+
+#       print("loading localy stored dataset gse5553.r")
+#       dataset<-get(load("data/gse5553.r"))
+
+
+# #          
+#       print("loading localy stored dataset gse35014")
+#       dataset<-get(load("data/gse35014.r"))
+#       dataset<-dataset[[1]]
+#       dataset<-add_annotation(dataset)
+
+      
+       # print(pData(dataset));return(dataset)
       
     })
   })
@@ -61,6 +81,9 @@ shinyServer(function(input, output) {
   })
 })
  
+
+
+
 #display select boxes for plotting
 output$choose_columns_plot <- renderUI({
  
@@ -77,12 +100,27 @@ output$choose_columns_plot <- renderUI({
     
     sig_cols <- col_names[grep(1,as.numeric(lapply(gsvaInput(),is.numeric)))]
  
-    # Create the checkboxes
-    checkboxGroupInput("columns", "Select signatures", 
-                       choices  = sig_cols,
-                       selected = NULL)
+#     # Create the checkboxes
+#     checkboxGroupInput("columns", "Select signatures", 
+#                        choices  = sig_cols,
+#                        selected = NULL)
+c1<-selectInput("columns1", "Select columns to plot", 
+            choices  = sig_cols,
+            selected = sig_cols[1])
+
+c2<-selectInput("columns2", "Select columns to plot", 
+            choices  = sig_cols,
+            selected = sig_cols[2])
+
+c<-c(c1,c2)
+
+
   })
 })
+
+
+
+
 
 output$choose_cohort_plot <- renderUI({
 
@@ -129,7 +167,6 @@ output$choose_columns_boxplot <- renderUI({
   })
 })
 
-
 #Plot based on selected boxes
 output$plot <- renderPlot({
 
@@ -140,22 +177,26 @@ output$plot <- renderPlot({
   # Get the data set
   dat <- gsvaInput()
   
-  # Make sure columns are correct for data set 
-  if (is.null(input$columns) || !(input$columns %in% names(dat)))
-    return()
-  
+  # Make sure columns are correct for data set (when data set changes, the
+  # columns will initially be for the previous data set)
+  if (is.null(input$columns1) || is.null(input$columns2))
+    {print(input$columns1);print(input$columns2);return()}
   isolate({
   # Keep the selected columns
-  dat <- dat[, input$columns, drop = FALSE]
+  dat <- dat[, c(input$columns1,input$columns2), drop = FALSE]
 
   print("Inside Plot")
   # Plot
-  print(input$selectedTab)
- 
-  plot(dat)
+
+  showplot(dat,input$columns1,input$columns2)
+  
   
   })
 })
+
+
+
+
 
 
 #BoxPlot based on selected boxes
@@ -176,7 +217,9 @@ output$boxplot <- renderPlot({
   # Keep the selected columns along with slected cohort as last column
   dat <- dat[, c(input$sig_box,input$cohort), drop = FALSE]
   
-  # BoxPlot 
+  # BoxPlot
+  
+ 
   iny<-grep(input$sig_box,colnames(dat))
   showboxplot(dat,ncol(dat),iny)
 
@@ -197,7 +240,7 @@ output$boxplot <- renderPlot({
   })
 
 #display select boxes for plotting
-output$saveui <- renderUI({
+output$testui <- renderUI({
   
   print(input$selectedTab)
   
@@ -205,21 +248,29 @@ output$saveui <- renderUI({
   
   # Choose signatures to plot
   isolate({
+
+#     col_names <- colnames(gsvaInput())
+#     
+#     
+#     
+#     sig_cols <- col_names[grep(1,as.numeric(lapply(gsvaInput(),is.numeric)))]
     
-     actionButton("save", "Save table")  
+    # Create the checkboxes
+     actionButton("save", "Save table")
+    
+    
     
   })
 })
-
 
 observe({
   
   if(input$save == 0 || is.null(input$save)) return()
   
   isolate({
-
-  write.csv(gsvaInput(),file="C:/Users/user/Documents/ES.csv")
-  print("ES.csv saved in Documents")
+  print(input$save)
+  write.csv(gsvaInput(),file="C:/Users/user/Documents/test.csv")
+  print("File saved in Documents")
 
           })
   

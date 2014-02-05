@@ -72,16 +72,16 @@ showboxplot<-function(indata, inx, iny) {
   print(p)
 }
 
-showplot<-function(indata, inx, iny) {
-  
-  dat <- indata
-  condition <- dat[,ncol(dat)]
-  
-  
-  p <- ggplot(dat, aes(condition, y=dat[,iny]), environment = environment())
-  p <- p + geom_dotplot()
- # p <- p + geom_jitter(aes(size=1,colour=factor(condition)),position = position_jitter(width = 0.2))
+showplot<-function(indata,x,y) {
 
- # p <- p + ylab(colnames(dat)[iny]) + xlab(colnames(dat)[inx])
+  dat <- indata
+  p <- qplot(dat[,1],dat[,2],data = dat) + xlab(x) + ylab(y)
   print(p)
+ 
 }
+
+
+
+
+#x<-getGSE(GEO = 'gse15258', destdir='D:/JNJ_work/R/Shiny/MyGSVAtable_v7/temp', verbose = TRUE, annotation = "hgu133plus2.db", simplify = TRUE)
+#gpl570 <- getGEO('GPL570', destdir="D:/JNJ_work/R/Shiny/MyGSVAtable_v7/temp")
